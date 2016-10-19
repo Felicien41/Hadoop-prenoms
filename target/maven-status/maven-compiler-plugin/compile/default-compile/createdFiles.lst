@@ -1,4 +1,6 @@
+CountNumberOfFirstNameByNumberOfOrigin$Reduce.class
 CountFirstNameByOrigin.class
 CountFirstNameByOrigin$Map.class
 CountFirstNameByOrigin$Reduce.class
+CountNumberOfFirstNameByNumberOfOrigin$Map.class
 CountNumberOfFirstNameByNumberOfOrigin.class

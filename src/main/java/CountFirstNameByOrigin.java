@@ -11,15 +11,19 @@ import org.apache.hadoop.mapred.*;
 
 public class CountFirstNameByOrigin {
 
-    public static class Map extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
+    private static class Map extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
         private final static IntWritable one = new IntWritable(1);
         private Text word = new Text();
-
         public void map(LongWritable key, Text value, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
+
             String line = value.toString();
-            StringTokenizer tokenizer = new StringTokenizer(line);
-            while (tokenizer.hasMoreTokens()) {
-                word.set(tokenizer.nextToken());
+            String[] lineSplit = line.split(";");
+            String[] originSplit = lineSplit[2].split(",");
+            for (String s : originSplit) {
+                if (s.equals("") || s.equals("?")) {
+                    s = "_unknown";
+                }
+                word.set(s.trim());
                 output.collect(word, one);
             }
         }
@@ -37,7 +41,7 @@ public class CountFirstNameByOrigin {
 
     public static void main(String[] args) throws Exception {
         JobConf conf = new JobConf(CountFirstNameByOrigin.class);
-        conf.setJobName("wordcount");
+        conf.setJobName("countFirstNameByOrigin");
 
         conf.setOutputKeyClass(Text.class);
         conf.setOutputValueClass(IntWritable.class);

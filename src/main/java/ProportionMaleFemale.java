@@ -1,5 +1,5 @@
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
@@ -12,13 +12,13 @@ import java.util.Iterator;
  */
 public class ProportionMaleFemale {
 
-    private static class Map extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
-        private final static IntWritable one = new IntWritable(1);
-        private final static IntWritable zero = new IntWritable(0);
+    private static class Map extends MapReduceBase implements Mapper<LongWritable, Text, Text, FloatWritable> {
+        private final static FloatWritable one = new FloatWritable(1);
+        private final static FloatWritable zero = new FloatWritable(0);
         private Text word = new Text();
         private Text f = new Text("f");
         private Text m = new Text("m");
-        public void map(LongWritable key, Text value, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
+        public void map(LongWritable key, Text value, OutputCollector<Text, FloatWritable> output, Reporter reporter) throws IOException {
             String line = value.toString();
             //Récupère la line à traiter
             String[] lineSplit = line.split(";");
@@ -27,6 +27,13 @@ public class ProportionMaleFemale {
             //Sépare les origines avec les virgules
             for (String s : originSplit) {
                 word.set(s.trim());
+
+                /*
+                    L'objectif ici est de remplir normalement l'ouputCollector, mais également de mettre un 0 dans
+                    la case non correspondante.
+                    Cela permet d'avoir le nombre total de personne dans chacune des outputs.
+                    On pourra ensuite calculer le pourcentage dans le reducer
+                 */
                 if (word.equals(f)){
                     output.collect(f, one);
                     output.collect(m, zero);
@@ -41,18 +48,20 @@ public class ProportionMaleFemale {
         }
     }
 
-    public static class Reduce extends MapReduceBase implements Reducer<Text, IntWritable, Text, IntWritable> {
-        public void reduce(Text key, Iterator<IntWritable> values, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
-            int sum = 0;
-            int total = 0;
-            int percent;
+    public static class Reduce extends MapReduceBase implements Reducer<Text, FloatWritable, Text, FloatWritable> {
+        public void reduce(Text key, Iterator<FloatWritable> values, OutputCollector<Text, FloatWritable> output, Reporter reporter) throws IOException {
+            float sum = 0;
+            float total = 0;
+            float percent;
             while (values.hasNext()) {
                 //Compte le nombre de 1 de la value
                 sum += values.next().get();
                 total++;
             }
-            percent = sum/total*100;
-            output.collect(key, new IntWritable(total));
+
+            //Le pourcentage est obtenu grace au nombre total de personne et du nombre de values.
+            percent = sum/total*10;
+            output.collect(key, new FloatWritable(percent));
         }
     }
 
@@ -61,7 +70,7 @@ public class ProportionMaleFemale {
         conf.setJobName("ProportionMaleFemale");
 
         conf.setOutputKeyClass(Text.class);
-        conf.setOutputValueClass(IntWritable.class);
+        conf.setOutputValueClass(FloatWritable.class);
 
         conf.setMapperClass(Map.class);
         conf.setCombinerClass(Reduce.class);

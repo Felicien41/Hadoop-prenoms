@@ -1,5 +1,7 @@
+ProportionMaleFemale$Reduce.class
 ProportionMaleFemale.class
 CountNumberOfFirstNameByNumberOfOrigin$Reduce.class
+ProportionMaleFemale$Map.class
 CountFirstNameByOrigin.class
 CountFirstNameByOrigin$Map.class
 CountFirstNameByOrigin$Reduce.class

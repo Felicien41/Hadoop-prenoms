@@ -20,7 +20,7 @@ public class CountNumberOfFirstNameByNumberOfOrigin {
             //Sépare les origines avec les virgules
             String[] originSplit = lineSplit[2].split(",");
 
-            if (originSplit.length==0) {
+            if (originSplit[0].isEmpty()) {
                 output.collect(new IntWritable(0), one);
             } else {
                 output.collect(new IntWritable(originSplit.length), one);

@@ -14,7 +14,10 @@ public class ProportionMaleFemale {
 
     private static class Map extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
         private final static IntWritable one = new IntWritable(1);
+        private final static IntWritable zero = new IntWritable(0);
         private Text word = new Text();
+        private Text f = new Text("f");
+        private Text m = new Text("m");
         public void map(LongWritable key, Text value, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
             String line = value.toString();
             //Récupère la line à traiter
@@ -24,7 +27,15 @@ public class ProportionMaleFemale {
             //Sépare les origines avec les virgules
             for (String s : originSplit) {
                 word.set(s.trim());
-                output.collect(word, one);
+                if (word.equals(f)){
+                    output.collect(f, one);
+                    output.collect(m, zero);
+                }
+                else{
+                    output.collect(f, zero);
+                    output.collect(m, one);
+                }
+
                 //Ajout d'un 1 dans le dictionnaire pour le mot correspondant
             }
         }
@@ -33,11 +44,15 @@ public class ProportionMaleFemale {
     public static class Reduce extends MapReduceBase implements Reducer<Text, IntWritable, Text, IntWritable> {
         public void reduce(Text key, Iterator<IntWritable> values, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
             int sum = 0;
+            int total = 0;
+            int percent;
             while (values.hasNext()) {
                 //Compte le nombre de 1 de la value
                 sum += values.next().get();
+                total++;
             }
-            output.collect(key, new IntWritable(sum));
+            percent = sum/total*100;
+            output.collect(key, new IntWritable(total));
         }
     }
 

@@ -42,7 +42,7 @@ public class ProportionMaleFemale {
     }
 
     public static void main(String[] args) throws Exception {
-        JobConf conf = new JobConf(CountFirstNameByOrigin.class);
+        JobConf conf = new JobConf(ProportionMaleFemale.class);
         conf.setJobName("ProportionMaleFemale");
 
         conf.setOutputKeyClass(Text.class);

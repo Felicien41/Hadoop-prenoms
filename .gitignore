@@ -71,3 +71,4 @@ buildNumber.properties
 /.idea/
 /mvnhdfs.sh
 /TP2_Hadoop.iml
+output/

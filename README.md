@@ -7,7 +7,7 @@ CountNameByOrigin
 CountNumberOfFisrtNameByNumberOfOrigin
 ProportionMaleFemale
 
-## Utilisation,
+## Utilisation
 
 
 hadoop jar TP2-0.1.jar [projet] /res/prenoms.csv [output]
